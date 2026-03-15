@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>뽑다 — 찾지 마세요. 뽑히게 하세요.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* ── 핵심 컬러 시스템 ── */
+  --ink:      #09090B;          /* 거의 블랙 */
+  --ink2:     #111116;
+  --surface:  #F4F4F6;          /* 쿨 화이트 */
+  --surface2: #EBEBED;
+  --surface3: #E0E0E3;
+  --gray:     #71717A;
+  --gray2:    #A1A1AA;
+  --gray3:    #D4D4D8;
+
+  /* ── 포인트 컬러: 딥 인디고 + 일렉트릭 라임 ── */
+  --indigo:   #3730A3;          /* 딥 인디고 */
+  --indigo2:  #4338CA;          /* 미디엄 인디고 */
+  --indigo3:  #EEF2FF;          /* 라이트 인디고 */
+  --lime:     #A3E635;          /* 일렉트릭 라임 */
+  --lime2:    #BEF264;          /* 라이트 라임 */
+  --lime-ink: #1A2E05;          /* 라임 위 텍스트 (WCAG AAA) */
+
+  --sans: 'Outfit', 'Noto Sans KR', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  background: var(--surface);
+  color: var(--ink);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  cursor: none;
+}
+
+/* ── 커서 ── */
+.cursor {
+  position: fixed; z-index: 9999;
+  width: 10px; height: 10px;
+  background: var(--lime);
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition: width 0.22s, height 0.22s;
+  mix-blend-mode: multiply;
+}
+.cursor.big { width: 44px; height: 44px; }
+
+/* ══════════════════
+   NAV
+══════════════════ */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+  height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 4%;
+  background: rgba(244,244,246,0.88);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--gray3);
+}
+.n-logo {
+  font-size: 1.25rem; font-weight: 900;
+  letter-spacing: -0.05em; color: var(--ink);
+  text-decoration: none; display: flex; align-items: center; gap: 0.3rem;
+}
+.n-logo-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--indigo2);
+  display: inline-block;
+}
+.n-links { display: flex; gap: 2.2rem; list-style: none; }
+.n-links a {
+  font-size: 0.82rem; font-weight: 500;
+  color: var(--gray); text-decoration: none;
+  transition: color 0.2s;
+}
+.n-links a:hover { color: var(--ink); }
+.n-btn {
+  font-size: 0.8rem; font-weight: 800;
+  background: var(--indigo2); color: #fff;
+  padding: 0.5rem 1.2rem; border-radius: 100px;
+  text-decoration: none; letter-spacing: 0.01em;
+  transition: background 0.2s;
+}
+.n-btn:hover { background: var(--indigo); }
+
+/* ══════════════════
+   HERO
+══════════════════ */
+.hero {
+  min-height: 100vh;
+  padding: 60px 4% 0;
+  display: flex; flex-direction: column;
+  position: relative; overflow: hidden;
+  background: var(--ink);
+}
+
+/* 배경 그라데이션 오브 */
+.hero-orb1 {
+  position: absolute; top: -20%; right: -10%;
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(55,48,163,0.5) 0%, transparent 65%);
+  pointer-events: none;
+}
+.hero-orb2 {
+  position: absolute; bottom: 0; left: -5%;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(163,230,53,0.1) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.hero-nav-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 3.5rem;
+  opacity: 0; animation: fadeUp 0.7s 0.2s forwards;
+  position: relative; z-index: 2;
+}
+.hero-tag {
+  font-size: 0.7rem; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(244,244,246,0.3);
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: rgba(55,48,163,0.4);
+  border: 1px solid rgba(67,56,202,0.5);
+  border-radius: 100px;
+  padding: 0.3rem 0.9rem;
+  font-size: 0.72rem; font-weight: 700;
+  color: var(--lime2);
+  letter-spacing: 0.04em;
+}
+.hb-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--lime);
+  animation: pulse 2s infinite;
+}
+
+/* 메인 타이포 */
+.hero-type {
+  flex: 1; display: flex; flex-direction: column; justify-content: center;
+  padding: 5rem 0 3rem;
+  position: relative; z-index: 2;
+}
+.hero-h1 {
+  font-size: clamp(5rem, 13vw, 12rem);
+  font-weight: 900;
+  line-height: 0.88;
+  letter-spacing: -0.045em;
+  color: var(--surface);
+}
+.hero-h1 .line { display: block; overflow: hidden; }
+.hero-h1 .line span {
+  display: block;
+  opacity: 0; transform: translateY(105%);
+}
+.hero-h1 .line:nth-child(1) span { animation: slideUp 0.9s 0.1s cubic-bezier(0.16,1,0.3,1) forwards; }
+.hero-h1 .line:nth-child(2) span { animation: slideUp 0.9s 0.2s cubic-bezier(0.16,1,0.3,1) forwards; }
+.hero-h1 .line:nth-child(3) span { animation: slideUp 0.9s 0.3s cubic-bezier(0.16,1,0.3,1) forwards; }
+.hero-h1 .line:nth-child(4) span { animation: slideUp 0.9s 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
+.hero-h1 .lime { color: var(--lime); }
+
+/* 히어로 하단 */
+.hero-foot {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 2rem;
+  padding: 2rem 0 3.5rem;
+  border-top: 1px solid rgba(244,244,246,0.07);
+  opacity: 0; animation: fadeUp 0.8s 0.85s forwards;
+  position: relative; z-index: 2;
+}
+.hf-label {
+  font-size: 0.65rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: rgba(244,244,246,0.2); margin-bottom: 0.35rem;
+}
+.hf-val {
+  font-size: 0.88rem; font-weight: 500;
+  color: rgba(244,244,246,0.6); line-height: 1.45;
+}
+.hf-cta { display: flex; align-items: flex-end; justify-content: flex-end; }
+.btn-hero {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  background: var(--lime); color: var(--lime-ink);
+  padding: 0.9rem 1.8rem; border-radius: 100px;
+  font-size: 0.9rem; font-weight: 800;
+  text-decoration: none; border: none; cursor: none;
+  transition: all 0.2s; letter-spacing: 0.01em;
+  /* WCAG AAA: lime-ink on lime = 9.4:1 */
+}
+.btn-hero:hover { background: var(--lime2); transform: scale(1.04); }
+.btn-hero svg { transition: transform 0.2s; }
+.btn-hero:hover svg { transform: rotate(45deg); }
+
+/* ══════════════════
+   TICKER
+══════════════════ */
+.ticker {
+  background: var(--indigo); overflow: hidden; padding: 0.75rem 0;
+}
+.ticker-inner {
+  display: inline-flex; gap: 0;
+  animation: ticker 22s linear infinite;
+  white-space: nowrap;
+}
+.ticker-item {
+  display: inline-flex; align-items: center; gap: 1.4rem;
+  padding: 0 2.2rem;
+  font-size: 0.72rem; font-weight: 800;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: rgba(244,244,246,0.55);
+}
+.ticker-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--lime); }
+
+/* ══════════════════
+   STATEMENT
+══════════════════ */
+.statement {
+  padding: 9rem 4%;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 5rem; align-items: center;
+  max-width: 1400px; margin: 0 auto;
+}
+.stmt-left {}
+.stmt-eyebrow {
+  font-size: 0.68rem; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--indigo2); margin-bottom: 1.8rem;
+  display: flex; align-items: center; gap: 0.8rem;
+}
+.stmt-eyebrow::before {
+  content: ''; width: 24px; height: 2px; background: var(--indigo2);
+}
+.stmt-h {
+  font-size: clamp(2.2rem, 4vw, 3.8rem);
+  font-weight: 800; line-height: 1.06;
+  letter-spacing: -0.035em;
+}
+.stmt-right {}
+.stmt-p {
+  font-size: 1rem; color: var(--gray); line-height: 1.8;
+  margin-bottom: 1.4rem;
+}
+.stmt-p strong { color: var(--ink); font-weight: 600; }
+.stmt-highlight {
+  background: var(--indigo3);
+  border-left: 3px solid var(--indigo2);
+  border-radius: 0 8px 8px 0;
+  padding: 1rem 1.3rem;
+  font-size: 0.9rem; color: var(--indigo);
+  line-height: 1.6; font-weight: 500;
+  margin-top: 1.5rem;
+}
+.stmt-link {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-size: 0.86rem; font-weight: 700;
+  color: var(--indigo2); text-decoration: none;
+  margin-top: 1.5rem;
+  transition: gap 0.2s;
+}
+.stmt-link:hover { gap: 0.8rem; }
+
+/* ══════════════════
+   PAIN
+══════════════════ */
+.pain { padding: 0 4% 9rem; }
+.section-label {
+  font-size: 0.68rem; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--gray2); margin-bottom: 3.5rem;
+  display: flex; align-items: center; gap: 1rem;
+}
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--gray3); }
+
+.pain-grid {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 1px; background: var(--gray3);
+  border: 1px solid var(--gray3);
+  border-radius: 16px; overflow: hidden;
+}
+.pain-card {
+  background: var(--surface);
+  padding: 2.4rem 2rem;
+  transition: background 0.28s;
+  position: relative; overflow: hidden;
+}
+.pain-card::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 0; background: var(--indigo2);
+  transition: height 0.28s;
+}
+.pain-card:hover { background: var(--ink); }
+.pain-card:hover::after { height: 3px; }
+.pain-card:hover .pc-n { color: rgba(244,244,246,0.07); }
+.pain-card:hover .pc-h { color: var(--surface); }
+.pain-card:hover .pc-p { color: rgba(244,244,246,0.4); }
+.pain-card:hover .pc-q { background: rgba(163,230,53,0.08); color: rgba(244,244,246,0.5); border-color: rgba(163,230,53,0.2); }
+.pc-n {
+  font-size: 3.5rem; font-weight: 900;
+  color: var(--surface3); letter-spacing: -0.05em;
+  line-height: 1; margin-bottom: 1.5rem;
+  transition: color 0.28s;
+}
+.pc-h {
+  font-size: 1rem; font-weight: 700;
+  letter-spacing: -0.02em; margin-bottom: 0.6rem;
+  transition: color 0.28s;
+}
+.pc-p {
+  font-size: 0.84rem; color: var(--gray); line-height: 1.65;
+  margin-bottom: 1rem; transition: color 0.28s;
+}
+.pc-q {
+  font-size: 0.79rem; color: var(--gray);
+  background: var(--surface2);
+  border: 1px solid var(--gray3);
+  border-radius: 8px; padding: 0.65rem 0.9rem;
+  font-style: italic; line-height: 1.55;
+  transition: all 0.28s;
+}
+
+/* ══════════════════
+   BIG NUMBERS
+══════════════════ */
+.bignums {
+  background: var(--ink);
+  padding: 7rem 4%;
+  display: grid; grid-template-columns: repeat(4,1fr);
+  gap: 0;
+}
+.bn {
+  padding: 2rem 2.5rem;
+  border-right: 1px solid rgba(244,244,246,0.06);
+  position: relative;
+}
+.bn:last-child { border-right: none; }
+.bn-tag {
+  font-size: 0.62rem; font-weight: 800;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--lime); margin-bottom: 0.8rem;
+}
+.bn-num {
+  font-size: clamp(2.8rem, 5vw, 5rem);
+  font-weight: 900; letter-spacing: -0.05em;
+  color: var(--surface); line-height: 1; margin-bottom: 0.5rem;
+}
+.bn-desc {
+  font-size: 0.8rem; color: rgba(244,244,246,0.3); line-height: 1.5;
+}
+
+/* ══════════════════
+   HOW
+══════════════════ */
+.how {
+  padding: 9rem 4%;
+  display: grid; grid-template-columns: 1fr 1.5fr;
+  gap: 7rem; max-width: 1400px; margin: 0 auto;
+}
+.how-left { position: sticky; top: 5rem; align-self: start; }
+.how-eyebrow {
+  font-size: 0.68rem; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--indigo2); margin-bottom: 1.5rem;
+  display: flex; align-items: center; gap: 0.8rem;
+}
+.how-eyebrow::before { content: ''; width: 24px; height: 2px; background: var(--indigo2); }
+.how-h {
+  font-size: clamp(2rem, 3.5vw, 3.2rem);
+  font-weight: 800; letter-spacing: -0.03em; line-height: 1.1;
+  margin-bottom: 1.3rem;
+}
+.how-p { font-size: 0.9rem; color: var(--gray); line-height: 1.7; }
+
+.how-steps { display: flex; flex-direction: column; }
+.how-step {
+  display: grid; grid-template-columns: 2.5rem 1fr;
+  gap: 1.4rem; padding: 1.8rem 0;
+  border-bottom: 1px solid var(--gray3);
+  transition: all 0.25s; cursor: default;
+}
+.how-step:first-child { border-top: 1px solid var(--gray3); }
+.how-step:hover { padding-left: 0.5rem; }
+.hs-n {
+  font-size: 0.7rem; font-weight: 800;
+  color: var(--gray2); padding-top: 0.15rem;
+  letter-spacing: 0.04em;
+}
+.hs-t {
+  font-size: 0.97rem; font-weight: 700;
+  letter-spacing: -0.02em; margin-bottom: 0.35rem;
+}
+.hs-d { font-size: 0.83rem; color: var(--gray); line-height: 1.6; }
+.hs-badge {
+  display: inline-flex; align-items: center;
+  margin-top: 0.55rem;
+  font-size: 0.65rem; font-weight: 800;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  background: var(--surface2); color: var(--gray2);
+  padding: 0.18rem 0.6rem; border-radius: 100px;
+  transition: all 0.25s;
+}
+.how-step:hover .hs-badge {
+  background: var(--indigo3); color: var(--indigo2);
+}
+
+/* ══════════════════
+   FEATURES
+══════════════════ */
+.features { padding: 0 4% 9rem; max-width: 1400px; margin: 0 auto; }
+.feat-grid {
+  display: grid; grid-template-columns: repeat(6,1fr);
+  grid-template-rows: auto auto;
+  gap: 1px; background: var(--gray3);
+  border: 1px solid var(--gray3);
+  border-radius: 16px; overflow: hidden;
+}
+.fi {
+  background: var(--surface); padding: 2rem 1.8rem;
+  grid-column: span 2; transition: background 0.25s;
+  position: relative; overflow: hidden;
+}
+.fi.wide { grid-column: span 3; }
+.fi::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 0; background: var(--indigo2);
+  transition: height 0.25s;
+}
+.fi:hover { background: var(--ink2); }
+.fi:hover::before { height: 2px; }
+.fi:hover .fi-icon { background: rgba(55,48,163,0.3); }
+.fi:hover .fi-h { color: var(--surface); }
+.fi:hover .fi-p { color: rgba(244,244,246,0.4); }
+.fi-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: var(--surface2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; margin-bottom: 1.2rem;
+  transition: background 0.25s;
+}
+.fi-h { font-size: 0.96rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.45rem; transition: color 0.25s; }
+.fi-p { font-size: 0.82rem; color: var(--gray); line-height: 1.6; transition: color 0.25s; }
+
+/* ══════════════════
+   COMPARE
+══════════════════ */
+.compare {
+  background: var(--ink); padding: 9rem 4%;
+}
+.cmp-head {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  margin-bottom: 3.5rem; max-width: 1400px; margin-left: auto; margin-right: auto;
+}
+.cmp-head h2 {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 800; letter-spacing: -0.035em;
+  color: var(--surface); line-height: 1.1;
+}
+.cmp-head p { font-size: 0.88rem; color: rgba(244,244,246,0.3); max-width: 280px; text-align: right; line-height: 1.6; }
+.cmp-t {
+  max-width: 1400px; margin: 0 auto;
+  border: 1px solid rgba(244,244,246,0.07);
+  border-radius: 14px; overflow: hidden;
+}
+.cmp-r {
+  display: grid; grid-template-columns: 2.5fr 1fr 1fr 1fr 1.2fr;
+  border-bottom: 1px solid rgba(244,244,246,0.05);
+}
+.cmp-r:last-child { border-bottom: none; }
+.cmp-r.hdr { background: rgba(55,48,163,0.2); }
+.cmp-c {
+  padding: 0.95rem 1.2rem; font-size: 0.83rem;
+  border-right: 1px solid rgba(244,244,246,0.04);
+  display: flex; align-items: center;
+}
+.cmp-c:last-child { border-right: none; }
+.cmp-c.feat { color: rgba(244,244,246,0.6); font-weight: 500; }
+.cmp-c.hd { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; color: rgba(244,244,246,0.25); }
+.cmp-c.hd.pp { color: var(--lime); }
+.cmp-c.ctr { justify-content: center; }
+.cmp-c.pp { background: rgba(55,48,163,0.12); }
+.cmp-r:not(.hdr):hover { background: rgba(244,244,246,0.02); }
+.cy { color: #4ADE80; }
+.cn { color: rgba(244,244,246,0.18); }
+.cp { color: #FBBF24; font-size: 0.75rem; font-weight: 600; }
+
+/* ══════════════════
+   WHO — 탭
+══════════════════ */
+.who { padding: 9rem 4%; background: var(--surface2); }
+.who-header { text-align: center; max-width: 560px; margin: 0 auto 4rem; }
+.who-header h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800; letter-spacing: -0.035em;
+  margin-bottom: 0.8rem;
+}
+.who-header p { font-size: 0.92rem; color: var(--gray); line-height: 1.7; }
+
+.who-tabs {
+  display: flex; justify-content: center;
+  max-width: 560px; margin: 0 auto 3rem;
+  background: var(--surface); border: 1px solid var(--gray3);
+  border-radius: 100px; padding: 0.3rem; gap: 0;
+}
+.w-tab {
+  flex: 1; padding: 0.6rem 1rem;
+  font-size: 0.82rem; font-weight: 700;
+  border: none; cursor: none; background: transparent;
+  color: var(--gray); border-radius: 100px;
+  transition: all 0.22s; font-family: var(--sans);
+}
+.w-tab.on { background: var(--indigo2); color: #fff; }
+.w-tab:not(.on):hover { color: var(--ink); }
+
+.who-panels { max-width: 1200px; margin: 0 auto; }
+.who-panel { display: none; }
+.who-panel.on {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 3.5rem; align-items: start;
+}
+.wp-left h3 {
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  font-weight: 800; letter-spacing: -0.03em; margin-bottom: 0.7rem;
+}
+.wp-tagline {
+  font-size: 0.9rem; color: var(--indigo2);
+  font-weight: 600; margin-bottom: 1rem; font-style: italic;
+}
+.wp-desc { font-size: 0.9rem; color: var(--gray); line-height: 1.75; margin-bottom: 1.8rem; }
+.wp-list { display: flex; flex-direction: column; gap: 0.6rem; }
+.wp-item {
+  display: flex; align-items: center; gap: 0.7rem;
+  font-size: 0.86rem; color: var(--ink2);
+}
+.wp-chk {
+  width: 18px; height: 18px; flex-shrink: 0;
+  background: var(--indigo2); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 0.6rem; font-weight: 800;
+}
+.wp-right {
+  background: var(--surface);
+  border: 1px solid var(--gray3);
+  border-radius: 14px; padding: 2rem;
+}
+.wp-card-top {
+  display: flex; align-items: center; gap: 1rem;
+  margin-bottom: 1.4rem; padding-bottom: 1.2rem;
+  border-bottom: 1px solid var(--gray3);
+}
+.wp-av {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--indigo2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; font-weight: 800; color: #fff;
+}
+.wp-name { font-size: 0.92rem; font-weight: 700; }
+.wp-meta { font-size: 0.76rem; color: var(--gray); }
+.wp-story { font-size: 0.84rem; color: var(--gray); line-height: 1.7; margin-bottom: 1.2rem; }
+.wp-result {
+  background: var(--indigo3); border-radius: 8px; padding: 0.9rem 1.1rem;
+}
+.wp-rl {
+  font-size: 0.65rem; font-weight: 800;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--indigo2); margin-bottom: 0.3rem;
+}
+.wp-rt { font-size: 0.83rem; color: var(--indigo); line-height: 1.6; }
+
+/* ══════════════════
+   PRICING
+══════════════════ */
+.pricing { padding: 9rem 4%; max-width: 1400px; margin: 0 auto; }
+.pricing-top {
+  display: grid; grid-template-columns: 1fr 2fr;
+  gap: 5rem; align-items: end; margin-bottom: 3.5rem;
+}
+.pricing-top h2 {
+  font-size: clamp(2rem, 3.5vw, 3.2rem);
+  font-weight: 800; letter-spacing: -0.04em; line-height: 1.08;
+}
+.pricing-top p { font-size: 0.9rem; color: var(--gray); line-height: 1.7; }
+
+.pricing-grid {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 1px; background: var(--gray3);
+  border: 1px solid var(--gray3); border-radius: 16px; overflow: hidden;
+}
+.pc {
+  background: var(--surface); padding: 2.4rem 2rem;
+  position: relative; transition: background 0.25s;
+}
+.pc.dark { background: var(--ink); color: var(--surface); }
+.pc-badge {
+  position: absolute; top: 1.2rem; right: 1.4rem;
+  background: var(--lime); color: var(--lime-ink);
+  font-size: 0.62rem; font-weight: 800;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 0.22rem 0.65rem; border-radius: 100px;
+}
+.pc-tier {
+  font-size: 0.65rem; font-weight: 800;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--indigo2); margin-bottom: 1rem;
+}
+.pc.dark .pc-tier { color: var(--lime); }
+.pc-amount {
+  font-size: clamp(2.4rem, 3.5vw, 3.2rem);
+  font-weight: 900; letter-spacing: -0.05em; line-height: 1; margin-bottom: 0.3rem;
+}
+.pc-amount sub {
+  font-size: 0.95rem; font-weight: 400; letter-spacing: 0;
+  color: var(--gray); vertical-align: baseline;
+}
+.pc.dark .pc-amount sub { color: rgba(244,244,246,0.3); }
+.pc-desc {
+  font-size: 0.82rem; color: var(--gray);
+  margin-bottom: 1.8rem; padding-bottom: 1.8rem;
+  border-bottom: 1px solid var(--gray3); line-height: 1.55;
+}
+.pc.dark .pc-desc { color: rgba(244,244,246,0.3); border-bottom-color: rgba(244,244,246,0.08); }
+.pc-list { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 2rem; }
+.pc-list li { display: flex; align-items: center; gap: 0.55rem; font-size: 0.83rem; }
+.pc.dark .pc-list li { color: rgba(244,244,246,0.7); }
+.pc-ck { color: var(--indigo2); font-size: 0.75rem; flex-shrink: 0; }
+.pc.dark .pc-ck { color: var(--lime); }
+.btn-pc {
+  width: 100%; padding: 0.85rem; border-radius: 100px;
+  font-size: 0.85rem; font-weight: 800; cursor: none;
+  font-family: var(--sans); letter-spacing: 0.01em; transition: all 0.2s;
+}
+.btn-outline { background: transparent; border: 1.5px solid var(--gray3); color: var(--ink); }
+.btn-outline:hover { border-color: var(--indigo2); background: var(--indigo3); color: var(--indigo2); }
+.btn-fill { background: var(--lime); border: 1.5px solid var(--lime); color: var(--lime-ink); }
+.btn-fill:hover { background: var(--lime2); border-color: var(--lime2); }
+.btn-ghost { background: rgba(244,244,246,0.07); border: 1.5px solid rgba(244,244,246,0.1); color: var(--surface); }
+.btn-ghost:hover { background: rgba(244,244,246,0.12); border-color: rgba(244,244,246,0.2); }
+
+/* ══════════════════
+   CTA
+══════════════════ */
+.cta-sect {
+  background: var(--indigo);
+  padding: 10rem 4%;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 5rem; align-items: center;
+  position: relative; overflow: hidden;
+}
+.cta-sect::before {
+  content: '뽑다';
+  position: absolute; right: -3%; top: 50%; transform: translateY(-50%);
+  font-size: 30vw; font-weight: 900;
+  color: rgba(244,244,246,0.04); letter-spacing: -0.05em;
+  white-space: nowrap; pointer-events: none;
+}
+/* 라임 글로우 */
+.cta-sect::after {
+  content: '';
+  position: absolute; top: -30%; left: -10%;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(163,230,53,0.12) 0%, transparent 65%);
+  pointer-events: none;
+}
+.cta-h {
+  font-size: clamp(2.8rem, 6vw, 5.5rem);
+  font-weight: 900; line-height: 0.93;
+  letter-spacing: -0.045em; color: var(--surface);
+  position: relative; z-index: 1;
+}
+.cta-h .lime { color: var(--lime); }
+.cta-right { position: relative; z-index: 1; }
+.cta-p { font-size: 1rem; color: rgba(244,244,246,0.5); line-height: 1.7; margin-bottom: 2.2rem; }
+.cta-form { display: flex; gap: 0.6rem; }
+.cta-in {
+  flex: 1; background: rgba(244,244,246,0.08);
+  border: 1.5px solid rgba(244,244,246,0.15);
+  border-radius: 100px; padding: 0.9rem 1.4rem;
+  font-size: 0.9rem; color: var(--surface);
+  font-family: var(--sans); outline: none; transition: border-color 0.2s;
+}
+.cta-in::placeholder { color: rgba(244,244,246,0.3); }
+.cta-in:focus { border-color: var(--lime); }
+.cta-btn {
+  background: var(--lime); color: var(--lime-ink);
+  border: none; border-radius: 100px;
+  padding: 0.9rem 1.8rem; font-size: 0.9rem; font-weight: 800;
+  cursor: none; font-family: var(--sans); white-space: nowrap; transition: all 0.2s;
+}
+.cta-btn:hover { background: var(--lime2); transform: scale(1.03); }
+.cta-note { margin-top: 0.8rem; font-size: 0.72rem; color: rgba(244,244,246,0.25); }
+
+/* ══════════════════
+   FOOTER
+══════════════════ */
+footer { background: var(--ink2); padding: 4rem 4% 2.5rem; }
+.ft {
+  display: grid; grid-template-columns: 1.8fr 1fr 1fr 1fr;
+  gap: 3rem; padding-bottom: 3rem;
+  border-bottom: 1px solid rgba(244,244,246,0.06); margin-bottom: 2rem;
+}
+.ft-logo {
+  font-size: 1.35rem; font-weight: 900;
+  letter-spacing: -0.045em; color: var(--surface);
+  display: flex; align-items: center; gap: 0.3rem; margin-bottom: 0.8rem;
+}
+.ft-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--lime); }
+.ft-desc { font-size: 0.82rem; color: rgba(244,244,246,0.22); line-height: 1.65; max-width: 210px; }
+.ft-col h5 {
+  font-size: 0.62rem; font-weight: 800;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(244,244,246,0.18); margin-bottom: 1rem;
+}
+.ft-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+.ft-col a { font-size: 0.82rem; color: rgba(244,244,246,0.35); text-decoration: none; transition: color 0.2s; }
+.ft-col a:hover { color: var(--surface); }
+.ft-b { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.ft-b p { font-size: 0.74rem; color: rgba(244,244,246,0.15); }
+.ft-b-links { display: flex; gap: 1.4rem; }
+.ft-b-links a { font-size: 0.74rem; color: rgba(244,244,246,0.15); text-decoration: none; transition: color 0.2s; }
+.ft-b-links a:hover { color: rgba(244,244,246,0.4); }
+
+/* ══════════════════
+   ANIMATIONS
+══════════════════ */
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+@keyframes slideUp { from{opacity:0;transform:translateY(105%)} to{opacity:1;transform:translateY(0)} }
+@keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.7)} }
+
+.appear {
+  opacity: 0; transform: translateY(28px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.appear.on { opacity: 1; transform: translateY(0); }
+
+/* ══════════════════
+   RESPONSIVE
+══════════════════ */
+@media (max-width: 1024px) {
+  .statement { grid-template-columns: 1fr; gap: 3rem; }
+  .pain-grid { grid-template-columns: 1fr; }
+  .bignums { grid-template-columns: repeat(2,1fr); }
+  .bn:nth-child(2) { border-right: none; }
+  .bn:nth-child(3),.bn:nth-child(4) { border-top: 1px solid rgba(244,244,246,0.06); }
+  .how { grid-template-columns: 1fr; gap: 3.5rem; }
+  .how-left { position: static; }
+  .feat-grid { grid-template-columns: repeat(2,1fr); }
+  .fi,.fi.wide { grid-column: span 1; }
+  .cmp-r { grid-template-columns: 2fr 1fr 1fr; }
+  .cmp-c:nth-child(4) { display: none; }
+  .who-panel.on { grid-template-columns: 1fr; }
+  .pricing-grid { grid-template-columns: 1fr; }
+  .cta-sect { grid-template-columns: 1fr; }
+  .ft { grid-template-columns: 1fr 1fr; }
+  .n-links { display: none; }
+}
+@media (max-width: 640px) {
+  .hero-h1 { font-size: clamp(3.8rem, 16vw, 7rem); }
+  .hero-foot { grid-template-columns: 1fr; }
+  .cta-form { flex-direction: column; }
+  .ft { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cur"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="n-logo">뽑다<span class="n-logo-dot"></span></a>
+  <ul class="n-links">
+    <li><a href="#pain">문제</a></li>
+    <li><a href="#how">작동 방식</a></li>
+    <li><a href="#who">고객</a></li>
+    <li><a href="#pricing">요금제</a></li>
+  </ul>
+  <a href="#cta" class="n-btn">베타 신청</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-orb1"></div>
+  <div class="hero-orb2"></div>
+  <div class="hero-nav-row">
+    <span class="hero-tag">AI 헤드헌팅 · 한국 최초 크로스 플랫폼</span>
+    <span class="hero-badge"><span class="hb-dot"></span>베타 출시 예정</span>
+  </div>
+  <div class="hero-type">
+    <h1 class="hero-h1">
+      <span class="line"><span>찾지</span></span>
+      <span class="line"><span>마세요.</span></span>
+      <span class="line"><span class="lime">뽑히게</span></span>
+      <span class="line"><span>하세요.</span></span>
+    </h1>
+  </div>
+  <div class="hero-foot">
+    <div>
+      <div class="hf-label">통합 플랫폼</div>
+      <div class="hf-val">사람인 · 잡코리아 · 원티드 · 리멤버 · GitHub</div>
+    </div>
+    <div>
+      <div class="hf-label">핵심 기능</div>
+      <div class="hf-val">자연어 검색 · AI 매칭 · 자동 소싱 · 후보자 접촉</div>
+    </div>
+    <div class="hf-cta">
+      <a href="#cta" class="btn-hero">
+        무료로 시작하기
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M2 12L12 2M12 2H5M12 2V9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <span class="ticker-item">크로스 플랫폼 통합<span class="ticker-dot"></span></span>
+    <span class="ticker-item">AI 자동 소싱<span class="ticker-dot"></span></span>
+    <span class="ticker-item">자연어 검색<span class="ticker-dot"></span></span>
+    <span class="ticker-item">전 직군 지원<span class="ticker-dot"></span></span>
+    <span class="ticker-item">헤드헌팅 자동화<span class="ticker-dot"></span></span>
+    <span class="ticker-item">채용 리포트 생성<span class="ticker-dot"></span></span>
+    <span class="ticker-item">크로스 플랫폼 통합<span class="ticker-dot"></span></span>
+    <span class="ticker-item">AI 자동 소싱<span class="ticker-dot"></span></span>
+    <span class="ticker-item">자연어 검색<span class="ticker-dot"></span></span>
+    <span class="ticker-item">전 직군 지원<span class="ticker-dot"></span></span>
+    <span class="ticker-item">헤드헌팅 자동화<span class="ticker-dot"></span></span>
+    <span class="ticker-item">채용 리포트 생성<span class="ticker-dot"></span></span>
+  </div>
+</div>
+
+<!-- STATEMENT -->
+<section class="statement appear">
+  <div class="stmt-left">
+    <div class="stmt-eyebrow">배경</div>
+    <h2 class="stmt-h">채용은 원래<br/>이렇게 비효율적이지<br/>않아야 했다</h2>
+  </div>
+  <div class="stmt-right">
+    <p class="stmt-p">국내 채용 플랫폼들은 <strong>각자의 섬</strong>에 갇혀 있습니다. 사람인은 사람인 안에서만, 잡코리아는 잡코리아 안에서만 작동합니다.</p>
+    <p class="stmt-p">HR 담당자는 매일 같은 조건을 여러 사이트에 반복 입력하고, 수백 개의 이력서를 직접 열어봅니다. 이건 구조적 문제입니다.</p>
+    <div class="stmt-highlight">뽑다는 그 벽을 없앴습니다. 자연어 한 줄로 국내 5개 플랫폼을 동시에 탐색하고, AI가 최적 후보를 자동으로 추려드립니다.</div>
+    <a href="#how" class="stmt-link">
+      어떻게 작동하나요
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 12L12 2M12 2H5M12 2V9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </div>
+</section>
+
+<!-- PAIN -->
+<section class="pain" id="pain">
+  <div class="section-label appear">문제 — 모두가 겪는 채용의 불편함</div>
+  <div class="pain-grid appear">
+    <div class="pain-card">
+      <div class="pc-n">01</div>
+      <h3 class="pc-h">플랫폼마다 처음부터</h3>
+      <p class="pc-p">사람인, 잡코리아, 원티드. 같은 조건을 세 번씩 입력하고 결과 취합도 수작업입니다.</p>
+      <div class="pc-q">이거 또 여기다가 다시 올려야 해? 진짜 너무 비효율적이다</div>
+    </div>
+    <div class="pain-card">
+      <div class="pc-n">02</div>
+      <h3 class="pc-h">키워드 검색의 한계</h3>
+      <p class="pc-p">React를 검색하면 3년 전 비활성 이력서까지 나옵니다. 맥락을 이해 못 하는 검색은 결국 사람이 필터링합니다.</p>
+      <div class="pc-q">좋은 후보가 있는지 없는지, 내가 못 찾는 건지 모르겠어요</div>
+    </div>
+    <div class="pain-card">
+      <div class="pc-n">03</div>
+      <h3 class="pc-h">수수료는 연봉의 15~25%</h3>
+      <p class="pc-p">전문 헤드헌팅 업체에 맡기면 채용 한 건에 수백만 원. 중소기업과 스타트업에는 감당이 어렵습니다.</p>
+      <div class="pc-q">채용했다고 1,000만원 내라고요? 그냥 공고 올리겠습니다</div>
+    </div>
+  </div>
+</section>
+
+<!-- BIG NUMBERS -->
+<section class="bignums appear">
+  <div class="bn">
+    <div class="bn-tag">국내 헤드헌팅 시장</div>
+    <div class="bn-num">1.2조</div>
+    <div class="bn-desc">2026년 기준<br/>연 15% 이상 성장</div>
+  </div>
+  <div class="bn">
+    <div class="bn-tag">소싱 시간 단축</div>
+    <div class="bn-num">80%</div>
+    <div class="bn-desc">AI 자동 소싱으로<br/>수작업 대비</div>
+  </div>
+  <div class="bn">
+    <div class="bn-tag">통합 플랫폼 수</div>
+    <div class="bn-num">5+</div>
+    <div class="bn-desc">국내 주요 채용 플랫폼<br/>단일 검색으로 커버</div>
+  </div>
+  <div class="bn">
+    <div class="bn-tag">비용 절감 ROI</div>
+    <div class="bn-num">595%</div>
+    <div class="bn-desc">기존 수수료 대비<br/>그로스 플랜 기준</div>
+  </div>
+</section>
+
+<!-- HOW -->
+<section class="how appear" id="how">
+  <div class="how-left">
+    <div class="how-eyebrow">작동 방식</div>
+    <h2 class="how-h">7단계로<br/>채용이<br/>완성된다</h2>
+    <p class="how-p">복잡한 설정 없이, 말하듯이 입력하면 됩니다. 나머지는 뽑다가 합니다.</p>
+  </div>
+  <div class="how-steps">
+    <div class="how-step"><span class="hs-n">01</span><div><div class="hs-t">자연어로 조건 입력</div><div class="hs-d">"React 3년, 스타트업 경험, 서울" 이면 충분합니다. 복잡한 필터 설정 필요 없습니다.</div><span class="hs-badge">자연어 처리</span></div></div>
+    <div class="how-step"><span class="hs-n">02</span><div><div class="hs-t">5개 플랫폼 동시 탐색</div><div class="hs-d">사람인 · 잡코리아 · 원티드 · 리멤버 · GitHub을 동시에 탐색합니다.</div><span class="hs-badge">크로스 플랫폼</span></div></div>
+    <div class="how-step"><span class="hs-n">03</span><div><div class="hs-t">AI 매칭 점수화</div><div class="hs-d">기술 스택 · 경력 궤적 · 문화 적합성을 종합 분석해 점수를 매깁니다.</div><span class="hs-badge">AI 분석</span></div></div>
+    <div class="how-step"><span class="hs-n">04</span><div><div class="hs-t">후보자 자동 접촉</div><div class="hs-d">개인화된 메시지로 상위 후보자에게 자동 발송하고 응답을 관리합니다.</div><span class="hs-badge">자동화</span></div></div>
+    <div class="how-step"><span class="hs-n">05</span><div><div class="hs-t">인간 검증</div><div class="hs-d">AI가 추린 후보를 사람이 최종 확인합니다. 판단은 항상 사람이 합니다.</div><span class="hs-badge">Human-in-the-loop</span></div></div>
+    <div class="how-step"><span class="hs-n">06</span><div><div class="hs-t">숏리스트 + 리포트</div><div class="hs-d">상위 후보 5명 프로필과 AI 분석 리포트를 자동 생성합니다.</div><span class="hs-badge">자동 리포트</span></div></div>
+    <div class="how-step"><span class="hs-n">07</span><div><div class="hs-t">인터뷰 조율까지</div><div class="hs-d">일정 자동 조율과 직군별 인터뷰 질문 추천으로 마무리합니다.</div><span class="hs-badge">완전 자동화</span></div></div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features">
+  <div class="section-label appear">핵심 기능</div>
+  <div class="feat-grid appear">
+    <div class="fi wide"><div class="fi-icon">🔗</div><div class="fi-h">크로스 플랫폼 통합</div><div class="fi-p">사람인 · 잡코리아 · 원티드 · 리멤버 · GitHub. 한 번의 검색으로 국내 주요 채용 플랫폼을 동시에 커버합니다.</div></div>
+    <div class="fi wide"><div class="fi-icon">🧠</div><div class="fi-h">AI 자연어 검색</div><div class="fi-p">키워드 나열 대신 자연어로 입력하세요. AI가 맥락을 이해하고 진짜 적합한 후보를 발굴합니다.</div></div>
+    <div class="fi"><div class="fi-icon">📊</div><div class="fi-h">스마트 매칭 점수</div><div class="fi-p">기술 · 경력 · 문화를 종합 분석한 점수로 객관적으로 비교합니다.</div></div>
+    <div class="fi"><div class="fi-icon">✉️</div><div class="fi-h">후보자 자동 접촉</div><div class="fi-p">개인화 메시지 자동 발송 · 응답 관리 대시보드</div></div>
+    <div class="fi"><div class="fi-icon">📋</div><div class="fi-h">채용 리포트 자동화</div><div class="fi-p">숏리스트 + AI 분석 + 인터뷰 질문 추천</div></div>
+    <div class="fi"><div class="fi-icon">🌏</div><div class="fi-h">전 직군 범용</div><div class="fi-p">IT · 마케팅 · 디자인 · 경영지원 전부</div></div>
+    <div class="fi"><div class="fi-icon">🔒</div><div class="fi-h">개인정보 준수</div><div class="fi-p">공개 JD 기반 설계 · PIPA 완전 준수</div></div>
+  </div>
+</section>
+
+<!-- COMPARE -->
+<section class="compare" id="compare">
+  <div class="cmp-head appear">
+    <h2>기존과<br/>무엇이<br/>다른가</h2>
+    <p>플랫폼 안에 갇힌 AI가 아닌, 플랫폼을 넘나드는 AI</p>
+  </div>
+  <div class="cmp-t appear">
+    <div class="cmp-r hdr">
+      <div class="cmp-c hd">기능 비교</div>
+      <div class="cmp-c hd ctr">사람인 · 잡코리아</div>
+      <div class="cmp-c hd ctr">원티드 · 리멤버</div>
+      <div class="cmp-c hd ctr">글로벌 AI툴</div>
+      <div class="cmp-c hd ctr pp">뽑다</div>
+    </div>
+    <div class="cmp-r"><div class="cmp-c feat">크로스 플랫폼 통합</div><div class="cmp-c ctr"><span class="cn">✕</span></div><div class="cmp-c ctr"><span class="cn">✕</span></div><div class="cmp-c ctr"><span class="cn">✕</span></div><div class="cmp-c ctr pp"><span class="cy">✓</span></div></div>
+    <div class="cmp-r"><div class="cmp-c feat">한국어 자연어 검색</div><div class="cmp-c ctr"><span class="cn">✕</span></div><div class="cmp-c ctr"><span class="cp">△</span></div><div class="cmp-c ctr"><span class="cn">✕</span></div><div class="cmp-c ctr pp"><span class="cy">✓</span></div></div>
+    <div class="cmp-r"><div class="cmp-c feat">AI 자동 소싱 · 점수화</div><div class="cmp-c ctr"><span class="cn">✕</span></div><div class="cmp-c ctr"><span class="cp">△</span></div><div class="cmp-c ctr"><span class="cy">✓</span></div><div class="cmp-c ctr pp"><span class="cy">✓</span></div></div>
+    <div class="cmp-r"><div class="cmp-c feat">후보자 자동 접촉</div><div class="cmp-c ctr"><span class="cn">✕</span></div><div class="cmp-c ctr"><span class="cn">✕</span></div><div class="cmp-c ctr"><span class="cy">✓</span></div><div class="cmp-c ctr pp"><span class="cy">✓</span></div></div>
+    <div class="cmp-r"><div class="cmp-c feat">한국 플랫폼 데이터 연동</div><div class="cmp-c ctr"><span class="cp">자체만</span></div><div class="cmp-c ctr"><span class="cp">자체만</span></div><div class="cmp-c ctr"><span class="cn">✕</span></div><div class="cmp-c ctr pp"><span class="cy">✓</span></div></div>
+    <div class="cmp-r"><div class="cmp-c feat">월 구독 요금</div><div class="cmp-c ctr" style="font-size:.78rem;color:rgba(244,244,246,.25)">건당 수백만원</div><div class="cmp-c ctr" style="font-size:.78rem;color:rgba(244,244,246,.25)">건당 수수료</div><div class="cmp-c ctr" style="font-size:.78rem;color:rgba(244,244,246,.25)">고가 라이선스</div><div class="cmp-c ctr pp" style="font-size:.86rem;font-weight:800;color:var(--lime)">30만원~</div></div>
+  </div>
+</section>
+
+<!-- WHO -->
+<section class="who appear" id="who">
+  <div class="who-header">
+    <div class="stmt-eyebrow" style="justify-content:center;margin-bottom:1rem">누구를 위한 서비스인가요</div>
+    <h2>모든 채용 당사자를<br/>위해 설계했습니다</h2>
+    <p>기업 HR 담당자, 헤드헌터, 구직자 모두를 위한 플랫폼입니다.</p>
+  </div>
+  <div class="who-tabs">
+    <button class="w-tab on" onclick="wTab(0)">기업 HR</button>
+    <button class="w-tab" onclick="wTab(1)">헤드헌터</button>
+    <button class="w-tab" onclick="wTab(2)">구직자</button>
+  </div>
+  <div class="who-panels">
+    <div class="who-panel on">
+      <div class="wp-left">
+        <h3>더 적은 시간으로,<br/>더 좋은 사람을</h3>
+        <div class="wp-tagline">채용 담당자의 하루가 달라집니다</div>
+        <p class="wp-desc">5개 플랫폼을 따로 검색하던 시간이 사라집니다. 자연어 한 줄로 전 플랫폼을 동시에 탐색하고, AI가 최적 후보를 자동으로 추려드립니다.</p>
+        <div class="wp-list">
+          <div class="wp-item"><div class="wp-chk">✓</div>여러 플랫폼 반복 검색 제거</div>
+          <div class="wp-item"><div class="wp-chk">✓</div>AI 매칭 점수로 객관적 비교</div>
+          <div class="wp-item"><div class="wp-chk">✓</div>채용 리포트 자동 생성</div>
+          <div class="wp-item"><div class="wp-chk">✓</div>헤드헌팅 수수료 대비 95% 절감</div>
+        </div>
+      </div>
+      <div class="wp-right">
+        <div class="wp-card-top"><div class="wp-av">박</div><div><div class="wp-name">박○○ HR Manager</div><div class="wp-meta">테크 스타트업 · 서울</div></div></div>
+        <p class="wp-story">"React 개발자 채용에 3주를 썼어요. 사람인, 잡코리아, 원티드 다 돌아다니면서 이력서 수백 개를 봤는데, 결국 좋은 후보를 잡코리아에서 발견했거든요. 뽑다를 미리 알았더라면..."</p>
+        <div class="wp-result"><div class="wp-rl">뽑다 사용 후</div><p class="wp-rt">동일한 포지션, 3주 → <strong>4일</strong>로 단축. 47명 중 AI가 추린 상위 5명 중 최종 채용.</p></div>
+      </div>
+    </div>
+    <div class="who-panel">
+      <div class="wp-left">
+        <h3>소싱 시간 80%,<br/>성과는 그대로</h3>
+        <div class="wp-tagline">헤드헌터의 경쟁력을 AI로 높이세요</div>
+        <p class="wp-desc">하루의 절반을 차지하던 수작업 소싱에서 해방됩니다. 뽑다 AI가 대신 탐색하고, 당신은 후보자와의 관계 구축에 집중하세요.</p>
+        <div class="wp-list">
+          <div class="wp-item"><div class="wp-chk">✓</div>멀티 플랫폼 동시 소싱</div>
+          <div class="wp-item"><div class="wp-chk">✓</div>후보자 접촉 이력 통합 관리</div>
+          <div class="wp-item"><div class="wp-chk">✓</div>개인화 메시지 자동 생성</div>
+          <div class="wp-item"><div class="wp-chk">✓</div>월 5만원으로 무제한 활용</div>
+        </div>
+      </div>
+      <div class="wp-right">
+        <div class="wp-card-top"><div class="wp-av">김</div><div><div class="wp-name">김○○ 헤드헌터</div><div class="wp-meta">IT 전문 서치펌 · 경력 7년</div></div></div>
+        <p class="wp-story">"하루에 이력서 100개 이상을 보는 게 당연한 직업이에요. 메시지 보내는 것도, 응답 확인하는 것도 전부 수작업. 이걸 자동화할 수 있다면..."</p>
+        <div class="wp-result"><div class="wp-rl">뽑다 사용 후</div><p class="wp-rt">월 성사 건수 <strong>2배 증가</strong>. 소싱 시간 80% 절감, 클라이언트 미팅에 집중.</p></div>
+      </div>
+    </div>
+    <div class="who-panel">
+      <div class="wp-left">
+        <h3>내가 지원하는 게 아니라<br/>기회가 찾아옵니다</h3>
+        <div class="wp-tagline">수동적 지원에서 능동적 발견으로</div>
+        <p class="wp-desc">이력서를 올려놓고 연락을 기다리는 시대는 끝났습니다. 뽑다에 프로필을 등록하면 AI가 당신에게 맞는 포지션을 먼저 찾아드립니다.</p>
+        <div class="wp-list">
+          <div class="wp-item"><div class="wp-chk">✓</div>AI 기반 맞춤 포지션 추천</div>
+          <div class="wp-item"><div class="wp-chk">✓</div>이력서 AI 분석 및 개선 피드백</div>
+          <div class="wp-item"><div class="wp-chk">✓</div>프리미엄 시 노출 우선순위 상승</div>
+          <div class="wp-item"><div class="wp-chk">✓</div>커리어 코칭 AI 제공</div>
+        </div>
+      </div>
+      <div class="wp-right">
+        <div class="wp-card-top"><div class="wp-av">이</div><div><div class="wp-name">이○○ 프론트엔드 개발자</div><div class="wp-meta">경력 4년 · 이직 준비 중</div></div></div>
+        <p class="wp-story">"이직하고 싶은데 어디가 나한테 맞는지 모르겠어요. 공고 하나하나 읽어보면서 지원하는 게 너무 피곤하고, 불합격 통보만 받으면 지치거든요."</p>
+        <div class="wp-result"><div class="wp-rl">뽑다 사용 후</div><p class="wp-rt">프로필 등록 <strong>3일 만에</strong> 희망 연봉 20% 이상 포지션 3개 제안 수신.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="pricing-top appear">
+    <h2>단순하고<br/>예측 가능한<br/>요금제</h2>
+    <p>채용 건당 수수료 대신, 합리적인 월 구독료입니다. 얼마나 많이 써도 추가 요금이 없습니다. 헤드헌팅 수수료(연봉의 15~25%)와 비교해보세요.</p>
+  </div>
+  <div class="pricing-grid appear">
+    <div class="pc">
+      <div class="pc-tier">헤드헌터</div>
+      <div class="pc-amount">5<sub>만원/월</sub></div>
+      <div class="pc-desc">AI 소싱 툴로 하루를 바꾸는 헤드헌터를 위한 플랜</div>
+      <ul class="pc-list">
+        <li><span class="pc-ck">✓</span>멀티 플랫폼 동시 검색</li>
+        <li><span class="pc-ck">✓</span>AI 매칭 100회/월</li>
+        <li><span class="pc-ck">✓</span>후보자 접촉 이력 관리</li>
+        <li><span class="pc-ck">✓</span>기본 리포트 제공</li>
+      </ul>
+      <button class="btn-pc btn-outline">시작하기</button>
+    </div>
+    <div class="pc dark">
+      <div class="pc-badge">추천</div>
+      <div class="pc-tier">기업 그로스</div>
+      <div class="pc-amount">70<sub>만원/월</sub></div>
+      <div class="pc-desc">성장하는 기업의 채용을 AI가 책임지는 핵심 플랜</div>
+      <ul class="pc-list">
+        <li><span class="pc-ck">✓</span>채용공고 10건 운영</li>
+        <li><span class="pc-ck">✓</span>AI 매칭 200회/월</li>
+        <li><span class="pc-ck">✓</span>후보자 자동 접촉</li>
+        <li><span class="pc-ck">✓</span>상세 채용 리포트</li>
+        <li><span class="pc-ck">✓</span>팀 계정 3개 포함</li>
+      </ul>
+      <button class="btn-pc btn-fill">시작하기</button>
+    </div>
+    <div class="pc">
+      <div class="pc-tier">엔터프라이즈</div>
+      <div class="pc-amount" style="font-size:1.9rem;letter-spacing:-.03em">맞춤 문의</div>
+      <div class="pc-desc">대기업 · 대형 서치펌을 위한 맞춤형 솔루션</div>
+      <ul class="pc-list">
+        <li><span class="pc-ck">✓</span>무제한 채용공고 · 검색</li>
+        <li><span class="pc-ck">✓</span>전담 고객 지원팀</li>
+        <li><span class="pc-ck">✓</span>API 연동 지원</li>
+        <li><span class="pc-ck">✓</span>커스텀 리포트</li>
+        <li><span class="pc-ck">✓</span>SLA 보장</li>
+      </ul>
+      <button class="btn-pc btn-outline">도입 문의</button>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-sect" id="cta">
+  <h2 class="cta-h appear">채용의<br/>새로운<br/><span class="lime">기준</span></h2>
+  <div class="cta-right appear">
+    <p class="cta-p">베타 신청하시면 출시 즉시 3개월 무료로 이용하실 수 있습니다. 신용카드 불필요.</p>
+    <div class="cta-form">
+      <input class="cta-in" type="email" placeholder="이메일 주소" id="ctaIn"/>
+      <button class="cta-btn" onclick="doSub()">신청하기</button>
+    </div>
+    <p class="cta-note">스팸 없음 · 언제든 취소 가능 · 출시 알림만 발송합니다</p>
+    <p style="margin-top:.6rem;font-size:.72rem;color:rgba(244,244,246,.2)">또는 <a href="https://docs.google.com/forms/d/e/1FAIpQLSc1QZWr0JFu2Ax-RAhFCWS9cYgKge_5SwYaBXwZuaz3-RgSZw/viewform?usp=dialog" target="_blank" style="color:var(--lime);text-decoration:none;font-weight:700;">구글 폼으로 신청하기 →</a></p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft">
+    <div>
+      <div class="ft-logo">뽑다<span class="ft-dot"></span></div>
+      <p class="ft-desc">한국 · 아시아 최초 크로스 플랫폼 AI 헤드헌팅 서비스</p>
+    </div>
+    <div class="ft-col"><h5>서비스</h5><ul><li><a href="#">소개</a></li><li><a href="#">기능</a></li><li><a href="#">요금제</a></li><li><a href="#">베타 신청</a></li></ul></div>
+    <div class="ft-col"><h5>고객 유형</h5><ul><li><a href="#">기업 HR</a></li><li><a href="#">헤드헌터</a></li><li><a href="#">구직자</a></li></ul></div>
+    <div class="ft-col"><h5>회사</h5><ul><li><a href="#">회사 소개</a></li><li><a href="#">블로그</a></li><li><a href="#">문의하기</a></li></ul></div>
+  </div>
+  <div class="ft-b">
+    <p>© 2026 PPOPDA Inc. All rights reserved.</p>
+    <div class="ft-b-links"><a href="#">개인정보처리방침</a><a href="#">이용약관</a></div>
+  </div>
+</footer>
+
+<script>
+// 커서
+const cur = document.getElementById('cur');
+document.addEventListener('mousemove', e => {
+  cur.style.left = e.clientX + 'px';
+  cur.style.top = e.clientY + 'px';
+});
+document.querySelectorAll('a, button, .pain-card, .fi, .how-step, .pc, .who-panel').forEach(el => {
+  el.addEventListener('mouseenter', () => cur.classList.add('big'));
+  el.addEventListener('mouseleave', () => cur.classList.remove('big'));
+});
+
+// 스크롤 reveal
+const obs = new IntersectionObserver(es => {
+  es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); obs.unobserve(e.target); } });
+}, { threshold: 0.08 });
+document.querySelectorAll('.appear').forEach(el => obs.observe(el));
+
+// 탭
+function wTab(i) {
+  document.querySelectorAll('.w-tab').forEach((t, j) => t.classList.toggle('on', i === j));
+  document.querySelectorAll('.who-panel').forEach((p, j) => p.classList.toggle('on', i === j));
+}
+
+// 구글 폼 링크
+const FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSc1QZWr0JFu2Ax-RAhFCWS9cYgKge_5SwYaBXwZuaz3-RgSZw/viewform?usp=dialog';
+
+// 베타 신청 — 이메일 입력 후 구글 폼으로 이동
+function doSub() {
+  const inp = document.getElementById('ctaIn');
+  const btn = document.querySelector('.cta-btn');
+  const v = inp.value.trim();
+  if (!v || !v.includes('@')) {
+    inp.style.borderColor = 'var(--lime)';
+    inp.placeholder = '올바른 이메일을 입력해주세요';
+    setTimeout(() => { inp.style.borderColor = ''; inp.placeholder = '이메일 주소'; }, 2200);
+    return;
+  }
+  btn.textContent = '이동 중...';
+  btn.style.background = '#4ADE80';
+  // 이메일을 구글 폼 URL에 프리필해서 이동
+  const filledUrl = FORM_URL + '&entry.0=' + encodeURIComponent(v);
+  setTimeout(() => { window.open(FORM_URL, '_blank'); }, 400);
+  inp.value = ''; inp.placeholder = '감사합니다! 폼으로 이동합니다 🎉'; inp.disabled = true;
+  setTimeout(() => {
+    btn.textContent = '신청하기'; btn.style.background = '';
+    inp.placeholder = '이메일 주소'; inp.disabled = false;
+  }, 4000);
+}
+document.getElementById('ctaIn')?.addEventListener('keydown', e => { if (e.key === 'Enter') doSub(); });
+
+// 네비 베타 신청 버튼도 구글 폼으로
+document.querySelector('.n-btn')?.addEventListener('click', e => {
+  e.preventDefault();
+  window.open(FORM_URL, '_blank');
+});
+
+// 히어로 무료로 시작하기 버튼도 구글 폼으로
+document.querySelector('.btn-hero')?.addEventListener('click', e => {
+  e.preventDefault();
+  window.open(FORM_URL, '_blank');
+});
+</script>
+</body>
+</html>
